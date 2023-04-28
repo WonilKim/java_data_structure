@@ -16,5 +16,10 @@ public class Archer implements Unit {
     public void attack() {
         System.out.println("궁수가 활을 쏩니다.");
     }
+
+    @Override
+    public String toString() {
+        return "궁수입니다.";
+    }
     
 }

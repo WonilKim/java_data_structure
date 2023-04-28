@@ -27,12 +27,11 @@ public class Test {
         unitArray.add(w);
         unitArray.add(m);
 
-        for (int i=0; i< 3; i++) {
-            unitArray.get(i).run();
-            unitArray.get(i).walk();
-            unitArray.get(i).arrow();
-
-        }
+        // for (int i=0; i< 3; i++) {
+        //     unitArray.get(i).run();
+        //     unitArray.get(i).walk();
+        //     unitArray.get(i).arrow();
+        // }
 
 
     }
