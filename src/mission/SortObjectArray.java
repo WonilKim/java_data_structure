@@ -101,4 +101,6 @@ public class SortObjectArray {
 		arr[j] = temp;
 
 	}
+
+	// comparator vs comparable 차이 숙제
 }
