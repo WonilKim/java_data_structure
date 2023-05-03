@@ -16,14 +16,25 @@ class PhyscData implements Comparable<PhyscData> {
 
 	@Override
 	public int compareTo(PhyscData o) {
+		// 값들이 모두 같으면 0 리턴
+		if(this.equals(o)) {
+			return 0;
+		}
+
 		int comp = this.name.compareTo(o.name);
 		if (comp != 0) {
+			// name 이 같지 않으면 비교값 리턴
 			return comp;
 		} else {
+			// name 이 같으면 
+			// height 비교
 			comp = this.height - o.height;
 			if (comp != 0) {
+				// height 의 차가 0이 아니면(height 가 같지 않으면) 차 리턴
 				return comp;
 			} else {
+				// height 가 같으면 
+				// vision 의 차 리턴 (double 의 차를 올림 후 int 타입으로 변환)
 				return (BigDecimal.valueOf(this.vision - o.vision)).setScale(0, RoundingMode.UP).intValue();
 			}
 		}
