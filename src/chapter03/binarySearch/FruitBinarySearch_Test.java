@@ -1,5 +1,9 @@
 package chapter03.binarySearch;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 //3장 객체 배열 정렬 - binary search
 /*
 * Comparator를 사용하는 방법
@@ -11,6 +15,7 @@ package chapter03.binarySearch;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 
 public class FruitBinarySearch_Test {
 
@@ -48,6 +53,7 @@ public class FruitBinarySearch_Test {
 			}// 익명클래스 사용
 
 		};
+
 		Comparator<Fruit> cc_price = new Comparator<Fruit>() {// 익명클래스 사용
 
 			@Override
@@ -57,20 +63,69 @@ public class FruitBinarySearch_Test {
 			}// 익명클래스 사용
 		};
 
-		Fruit newFruit = new Fruit("체리", 500, "2023-5-18");
-		int result3 = Arrays.binarySearch(arr, newFruit, cc_name);
-		System.out.println("\nArrays.binarySearch() 조회결과::" + result3);
-		result3 = binarySearch(arr, newFruit, cc_name);
-		System.out.println("\nbinarySearch() 조회결과::" + result3);
+		Comparator<Fruit> cc_expire = new Comparator<Fruit>() {// 익명클래스 사용
 
+			@Override
+			public int compare(Fruit f1, Fruit f2) {
+				// TODO Auto-generated method stub
+				try {
+					Date date1 = new SimpleDateFormat("yyyy-M-dd").parse(f1.expire);
+					Date date2 = new SimpleDateFormat("yyyy-M-dd").parse(f2.expire);
+					int comp = date1.compareTo(date2);
+					return comp;
+
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return 0;
+				}		
+				
+			}// 익명클래스 사용
+		};
+
+		// 이름 정렬 상태
+
+		Fruit newFruit = new Fruit("체리", 500, "2023-5-18");
+
+		int result3 = Arrays.binarySearch(arr, newFruit, cc_name);
+		System.out.println("\nArrays.binarySearch() 조회결과 3::" + result3);
+
+		//
+		int result4 = binarySearch(arr, newFruit, cc_name);
+		System.out.println("\nbinarySearch() 조회결과 4::" + result4);
+
+		int result7 = binarySearch(arr, newFruit, Fruit.CC_NAME);
+		System.out.println("\nbinarySearch() 조회결과 7::" + result7);
+
+		// 가격 정렬
 		sortData(arr, cc_price);
-		System.out.println("comparator 정렬(가격)후 객체 배열: ");
+
+		System.out.println("comparator 정렬(가격)후 객체 배열 : ");
 		showData(arr);
-		result3 = Arrays.binarySearch(arr, newFruit, cc_price);
-		System.out.println("\nArrays.binarySearch() 조회결과::" + result3);
-		result3 = binarySearch(arr, newFruit, cc_price);
-		System.out.println("\nbinarySearch() 조회결과::" + result3);
-	}
+
+		int result5 = Arrays.binarySearch(arr, newFruit, cc_price);
+		System.out.println("\nArrays.binarySearch() 조회결과 5::" + result5);
+
+		int result6 = binarySearch(arr, newFruit, cc_price);
+		System.out.println("\nbinarySearch() 조회결과 6::" + result6);
+
+		int result8 = binarySearch(arr, newFruit, Fruit.CC_PRICE);
+		System.out.println("\nbinarySearch() 조회결과 8::" + result8);
+
+		// 유통기한 정렬
+		sortData(arr, cc_expire);
+		System.out.println("comparator 정렬(유통기한)후 객체 배열 : ");
+		showData(arr);
+
+		int result9 = binarySearch(arr, newFruit, Fruit.CC_EXPIRE);
+		System.out.println("\nbinarySearch() 조회결과 9::" + result9);
+
+		Fruit newFruit2 = new Fruit("망고", 350, "2023-06-08");
+
+		int result10 = binarySearch(arr, newFruit2, Fruit.CC_EXPIRE);
+		System.out.println("\nbinarySearch() 조회결과 10::" + result10);
+
+	} // main
 
 	private static void sortData(Fruit[] data, Comparator<Fruit> cc) {
 
@@ -93,7 +148,6 @@ public class FruitBinarySearch_Test {
 
 	}
 
-
 	private static int binarySearch(Fruit[] data, Fruit key, Comparator<Fruit> cc) {
 
 		int pl = 0;
@@ -102,14 +156,14 @@ public class FruitBinarySearch_Test {
 
 		do {
 			int pc = (pl + pr) / 2;
-			if(data[pc].equals(key))
+			if (cc.compare(data[pc], key) == 0) // 지정한 변수만을 비교해야함.
 				return pc;
-			else if(cc.compare(data[pc], key) < 0) 
+			else if (cc.compare(data[pc], key) < 0)
 				pl = pc + 1;
 			else
 				pr = pc - 1;
 
-		} while(pl <= pr);
+		} while (pl <= pr);
 
 		return -1;
 	}
@@ -127,10 +181,9 @@ public class FruitBinarySearch_Test {
 
 	}
 
-
 	private static void showData(Fruit[] arr) {
 		for (Fruit f : arr) {
-			System.out.println("name = " + f.name + ", price = " + f.price + ", date = " + f.date);
+			System.out.println("name = " + f.name + ", price = " + f.price + ", date = " + f.expire);
 		}
 	}
 
