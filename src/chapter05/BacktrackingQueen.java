@@ -9,9 +9,9 @@ import chapter04.Point;
 
 public class BacktrackingQueen {
 
-    private static ObjectStack stack = new ObjectStack(10);
-
     public static void SolveQueen(int[][] data) {
+        ObjectStack stack = new ObjectStack(10);
+
         int count = 0, mode = 0;
         int icol = 0, irow = 0;
 
