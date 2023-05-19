@@ -1,5 +1,6 @@
 package study.GenericMatrix;
 
+import java.io.Console;
 import java.lang.reflect.Array;
 import java.util.Random;
 
@@ -8,6 +9,7 @@ public class Matrix<T extends Number> {
     private int rows;
     private int cols;
     private T[][] data;
+
     private final Class<T> type;
 
     /**
@@ -124,16 +126,27 @@ public class Matrix<T extends Number> {
      * 각각의 원소를 행과 열에 맞춰 출력한다.
      */
     protected void showData() {
-        // 이 객체의 generic 타입을 출력
-        System.out.println("- " + this.type.getSimpleName() + " 타입 행렬의 데이터");
-        for (int i = 0; i < this.rows; i++) { // 행의 개수
-            for (int j = 0; j < this.cols; j++) { // 열의 개수
-                System.out.print(this.data[i][j] + "\t");
+        try {
+            // 이 객체의 generic 타입을 출력
+            System.out.println("- " + this.type.getSimpleName() + " 타입 행렬의 데이터");
+            for (int i = 0; i < this.rows; i++) { // 행의 개수
+                for (int j = 0; j < this.cols; j++) { // 열의 개수
+                    System.out.print(this.data[i][j] + "\t");
+                }
+                System.out.println();
             }
             System.out.println();
-        }
-        System.out.println();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
+
     } // protected void showData()
+
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return super.toString();
+    }
 
     /**
      * 함수를 호출하는 인스턴스의 원소값에 파라미터로 제공되는 행렬의 원소값을 더함.
