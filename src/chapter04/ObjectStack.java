@@ -110,4 +110,30 @@ public class ObjectStack {
         }
 
     }
+
+    @Override
+    public String toString() {
+
+        String str = "";
+        for (Point p : this.data) {
+            str += p.toString() + " ";
+        }
+
+        return str;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        ObjectStack st = (ObjectStack) obj;
+        if (this.size() != st.size()) {
+            return false;
+        } else {
+            for (Point p : this.data) {
+                if (p.equals(st) == false) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 }
