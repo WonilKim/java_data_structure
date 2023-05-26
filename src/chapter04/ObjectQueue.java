@@ -114,4 +114,39 @@ public class ObjectQueue {
             System.out.println();
         }
     }
+
+    public ArrayList<Point> getAll() {
+        if (this.size() <= 0)
+            return null;
+        else {
+            return this.que;
+        }
+
+    }
+
+    @Override
+    public String toString() {
+
+        String str = "";
+        for (Point p : this.que) {
+            str += "[" + p.toString() + "] ";
+        }
+
+        return str;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        ObjectQueue q = (ObjectQueue) obj;
+        if (this.size() != q.size()) {
+            return false;
+        } else {
+            for (int i=0; i<this.size(); i++) {
+                if (this.que.get(i).equals(q.que.get(i)) == false) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 }

@@ -19,6 +19,8 @@ class Factorial {
         System.out.print("정수를 입력하세요 : ");
         int x = stdIn.nextInt();
 
-        System.out.println(x + "의 팩토리얼은 " + factorial(x) + "입니다.");
+        int result = factorial(x);
+
+        System.out.println(x + "의 팩토리얼은 " + result + "입니다.");
     }
 }
