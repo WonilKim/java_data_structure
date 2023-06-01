@@ -19,7 +19,7 @@ class Heap implements MaxHeap {
 	private static final int CONSOLE_WIDTH = 100;
 	private static final int CELL_COUNT = 16;
 	private static final int CELL_CENTER = CELL_COUNT / 2;
-	private static final int CELL_WIDTH = 6;
+	private static final int CELL_WIDTH = 8;
 
 	public Heap(int maxSize) {
 		this.maxSize = maxSize;
@@ -42,10 +42,23 @@ class Heap implements MaxHeap {
 			if ((i == 1) || (i == (int)(Math.pow(2, depth - 1)))) {
 				System.out.println();
 			}
-			System.out.print(".".repeat(rowStart));
-			System.out.print(heap[i]);
-			System.out.print(".".repeat(rowStart));
+
+			System.out.print(" ".repeat((rowStart) / 2));
+			if((i * 2) <= n)
+				System.out.print(".".repeat((rowStart / 2) - 2));
+			else
+				System.out.print(" ".repeat((rowStart / 2) - 2));
+
+			System.out.print(StringUtils.center(String.format("%s", heap[i]), 4));
+			
+			if((i * 2 + 1) <= n)
+				System.out.print(".".repeat((rowStart / 2) - 2));
+				else
+				System.out.print(" ".repeat((rowStart / 2) - 2));
+			System.out.print(" ".repeat((rowStart) / 2));
+
 		}
+		System.out.println();
 
 	}
 
@@ -124,13 +137,35 @@ class Heap implements MaxHeap {
 	}
 }
 
+class StringUtils {
+
+    public static String center(String s, int size) {
+        return center(s, size, ' ');
+    }
+
+    public static String center(String s, int size, char pad) {
+        if (s == null || size <= s.length())
+            return s;
+
+        StringBuilder sb = new StringBuilder(size);
+        for (int i = 0; i < (size - s.length()) / 2; i++) {
+            sb.append(pad);
+        }
+        sb.append(s);
+        while (sb.length() < size) {
+            sb.append(pad);
+        }
+        return sb.toString();
+    }
+}
+
 public class HeapSort {
 	
 	public static void main(String[] args) {
 		int select = 0;
 		Scanner stdIn = new Scanner(System.in);
 		Heap heap = new Heap(100);
-	    final int count = 10;
+	    final int count = 12;
 	    int[] x = new int[count+1];
 	    int []sorted = new int[count];
 
