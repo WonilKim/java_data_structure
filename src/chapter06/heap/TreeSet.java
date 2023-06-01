@@ -21,19 +21,32 @@ class Sets {
 	public void SimpleUnion(int i, int j)
 	// Replace the disjoint sets with roots i and j, i != j with their union
 	{
-		// 조건을 걸어야 한다. (main)
 
-		while (parent[i] > 0) i = parent[i];	// 루트를 찾는것
-		while (parent[j] > 0) j = parent[j];
+		// j 의 부모가 이미 있으면 j 의 루트가 i 를 가리키도록
+		if (parent[j] >= 0) {
+			while (parent[j] > 0) 
+				j = parent[j];
 
+			parent[j] = i;
+			return;
+		}
+
+		싸이클 해결이 안돼서 무한루프
+
+		while (parent[i] > 0) 
+			i = parent[i];	// 루트를 찾는것
+		while (parent[j] > 0) 
+			j = parent[j];
+
+		// 루트가 같으면 싸이클
 		if(i == j) {
 			System.out.println("cycle");
 			return;
 		} 
 
-		WeightedUnion(i, j);
-		// System.out.println("i = " + i + " j = " + j);
-		// parent[j] = i;
+		// WeightedUnion(i, j);
+		System.out.println("i = " + i + " j = " + j);
+		parent[j] = i;
 	}
 
 	public int SimpleFind(int i)
@@ -50,6 +63,17 @@ class Sets {
 	{
 		// 루트를 찾는 코드를 추가해야 한다.
 		// 같은 루트를 합치는 것(싸이클)을 리젝트 해야 한다. 
+		while (parent[i] > 0) 
+			i = parent[i];	// 루트를 찾는것
+
+		while (parent[j] > 0) 
+			j = parent[j];
+
+		// 루트가 같으면 싸이클
+		if(i == j) {
+			System.out.println("cycle");
+			return;
+		} 
 
 		int temp = parent[i] + parent[j];	// 두 루트의 카운트를 합친 수
 		if (parent[i] > parent[j]) { // i has fewer nodes // 마이너스 값이라 비교를 반대로
@@ -126,18 +150,18 @@ public class TreeSet {
 	System.out.println ("find 8: " + s1.CollapsingFind(8) + "\n");
 	s1.display();
 
-	// weighted 설명
-	s1.SimpleUnion(0,1);
-	s1.SimpleUnion(1,2);
-	s1.SimpleUnion(2,3);
-	s1.SimpleUnion(3,4);
-	s1.SimpleUnion(4,5); 
-	// 0 <- 1 <- 2 <- 3 <- 4 <- 5
-	// 일자로 만들어진다. 트리 형태가 아님. 루트를 찾는데 오래걸린다.
-	// 루트만 상위로 두고 나머지는 모두 루트의 바로 아래 차일드로 만든다.
+	// // weighted 설명
+	// s1.SimpleUnion(0,1);
+	// s1.SimpleUnion(1,2);
+	// s1.SimpleUnion(2,3);
+	// s1.SimpleUnion(3,4);
+	// s1.SimpleUnion(4,5); 
+	// // 0 <- 1 <- 2 <- 3 <- 4 <- 5
+	// // 일자로 만들어진다. 트리 형태가 아님. 루트를 찾는데 오래걸린다.
+	// // 루트만 상위로 두고 나머지는 모두 루트의 바로 아래 차일드로 만든다.
 
-	// parant[i] 가 -1 이면 루트였는데 이것을 -카운트로 바꾸는것.
-	// 두 루트를 합칠때 깊이가 낮은것을 깊은것에 붙이는것이 깊이가 증가하지 않는다.
+	// // parant[i] 가 -1 이면 루트였는데 이것을 -카운트로 바꾸는것.
+	// // 두 루트를 합칠때 깊이가 낮은것을 깊은것에 붙이는것이 깊이가 증가하지 않는다.
 
 	
 
