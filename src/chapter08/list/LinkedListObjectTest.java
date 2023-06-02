@@ -39,12 +39,47 @@ class SimpleObject {
 		}
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		SimpleObject so = (SimpleObject)obj;
+
+		// if (this.no.equals(so.no) && this.name.equals(so.name))
+		if ((Integer.parseInt(this.no) - Integer.parseInt(so.no) == 0) && this.name.equals(so.name))
+			return true;
+		else
+			return false;
+
+	}
+
+	public boolean equalsNo(Object obj) {
+		SimpleObject so = (SimpleObject)obj;
+
+		// if (this.no.equals(so.no) && this.name.equals(so.name))
+		if (Integer.parseInt(this.no) - Integer.parseInt(so.no) == 0)
+			return true;
+		else
+			return false;
+
+	}
+
+	public boolean equalsName(Object obj) {
+		SimpleObject so = (SimpleObject)obj;
+
+		// if (this.no.equals(so.no) && this.name.equals(so.name))
+		if (this.name.equals(so.name))
+			return true;
+		else
+			return false;
+
+	}
+
 	// --- 회원번호로 순서를 매기는 comparator ---//
 	public static final Comparator<SimpleObject> NO_ORDER = new NoOrderComparator();
 
 	private static class NoOrderComparator implements Comparator<SimpleObject> {
 		public int compare(SimpleObject d1, SimpleObject d2) {
-			return (d1.no.compareTo(d2.no) > 0) ? 1 : (d1.no.compareTo(d2.no) < 0) ? -1 : 0;
+			// return (d1.no.compareTo(d2.no) > 0) ? 1 : (d1.no.compareTo(d2.no) < 0) ? -1 : 0;
+			return Integer.parseInt(d1.no) - Integer.parseInt(d2.no);
 		}
 	}
 
@@ -66,6 +101,11 @@ class NodeObject {
 		data = element;
 		link = null;
 	}
+
+	@Override
+	public String toString() {
+		return data.toString();
+	}
 } // class NodeObject
 
 class LinkedListObject {
@@ -75,21 +115,107 @@ class LinkedListObject {
 		first = null;
 	}
 
-	public int Delete(SimpleObject element, Comparator<SimpleObject> cc) // delete the element
+	public NodeObject Delete(SimpleObject element, Comparator<SimpleObject> cc) // delete the element
 	{
-		return 0;
+		NodeObject delNode = null;
+		NodeObject q = null;
+		NodeObject p = first;
+		boolean found = false;
+		while (p != null) {
+			
+			if ((cc == null) &&(p.data.equals(element))) { 
+				found = true;
+			} else if ((cc == SimpleObject.NO_ORDER) && (p.data.equalsNo(element))) { 
+				found = true;
+			} else if ((cc == SimpleObject.NAME_ORDER) && (p.data.equalsName(element))) { 
+				found = true;
+			}
+
+			if (found) {
+				delNode = new NodeObject(p.data);
+
+				if (p == first) {
+					first = first.link;
+					break;
+				} else if (p.link == null) {
+					q.link = null;
+					p = null;
+					break;
+				} else {
+					q.link = p.link;
+					p = null;
+					break;
+				}
+			}
+
+			q = p;
+			p = p.link;
+		}
+
+		return delNode;
 	}
 
 	public void Show() { // 전체 리스트를 순서대로 출력한다.
+		NodeObject p = first;
+
+		while (p != null) {
+			System.out.print(" " + p);
+			p = p.link;
+		}
+		System.out.println();
 
 	}
 
 	public void Add(SimpleObject element, Comparator<SimpleObject> cc) // 임의 값을 삽입할 때 리스트가 오름차순으로 정렬이 되도록 한다
 	{
+		NodeObject nd = new NodeObject(element);
+		NodeObject p = this.first;
+		NodeObject q = null;
+		if (p == null) {
+			first = nd;
+			return;
+		}
+
+		while (p != null) {
+			if (cc.compare(element, p.data) < 0) {
+				if (p == first) {
+					// first 보다 작으면
+					nd.link = p;
+					first = nd;
+					return;
+				} else {
+					// first 가 아닌 것 보다 작으면
+					nd.link = p;
+					q.link = nd;
+					return;
+				}
+			} else if (0 <= cc.compare(element, p.data)) {
+				q = p;
+				p = p.link;
+				if (p == null) {
+					// 마지막 노드
+					p = nd;
+					q.link = p;
+					return;
+				}
+			}
+		}
 
 	}
 
-	public boolean Search(SimpleObject element, Comparator<SimpleObject> cc) { // 전체 리스트를 순서대로 출력한다.
+	public boolean Search(SimpleObject element, Comparator<SimpleObject> cc) { // 
+		NodeObject p = first;
+		while (p != null) {
+			if ((cc == null) &&(p.data.equals(element))) { 
+				return true;
+			} else if ((cc == SimpleObject.NO_ORDER) && (p.data.equalsNo(element))) { 
+				return true;
+			} else if ((cc == SimpleObject.NAME_ORDER) && (p.data.equalsName(element))) { 
+				return true;
+			}
+			p = p.link;
+		}
+
 		return false;
 	}
 } // class LinkedListObject
@@ -145,25 +271,25 @@ public class LinkedListObjectTest {
 		LinkedListObject l = new LinkedListObject();
 		Scanner sc = new Scanner(System.in);
 		SimpleObject data;
-		System.out.println("inserted");
-		l.Show();
+		// System.out.println("inserted");
+		// l.Show();
 		do {
 			switch (menu = SelectMenu()) {
-				case Add: // 머리노드 삽입
+				case Add: // 삽입
 					data = new SimpleObject();
 					data.scanData("입력", 3);
 					l.Add(data, SimpleObject.NO_ORDER);
 					break;
-				case Delete: // 머리 노드 삭제
+				case Delete: // 삭제
 					data = new SimpleObject();
 					data.scanData("삭제", SimpleObject.NO);
-					int num = l.Delete(data, SimpleObject.NO_ORDER);
+					NodeObject num = l.Delete(data, SimpleObject.NO_ORDER);
 					System.out.println("삭제된 데이터 성공은 " + num);
 					break;
-				case Show: // 꼬리 노드 삭제
+				case Show: // 
 					l.Show();
 					break;
-				case Search: // 회원 번호 검색
+				case Search: // 검색
 					data = new SimpleObject();
 					data.scanData("탐색", SimpleObject.NO);
 					boolean result = l.Search(data, SimpleObject.NO_ORDER);
@@ -172,9 +298,11 @@ public class LinkedListObjectTest {
 					else
 						System.out.println("검색 실패 = " + result);
 					break;
-				case Exit: // 꼬리 노드 삭제
+				case Exit: // 
 					break;
 			}
 		} while (menu != Menu.Exit);
+
+		sc.close();
 	} // public static void main(String[] args)
 } // public class LinkedListObjectTest

@@ -166,8 +166,8 @@ public class LinkedListIntTest {
 		int data = 0;
 		int[] arrData = { 10, 20, 30, 5, 25, 40, 15, 3, 32, 8, 55, 11, 75 };
 		int index = 0;
-		System.out.println("inserted");
-		l.Show();
+		// System.out.println("inserted");
+		// l.Show();
 		do {
 			switch (menu = SelectMenu()) {
 				case Add: // 노드 삽입
@@ -203,6 +203,8 @@ public class LinkedListIntTest {
 					break;
 			}
 		} while (menu != Menu.Exit);
+
+		sc.close();
 
 	} // public static void main(String[] args)
 
