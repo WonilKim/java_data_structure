@@ -1,26 +1,84 @@
 package chapter09;
 
 /*
- * 23.6.7 3회차 실습 코드
+ * 23.6.7 3회차 실습코드 
  */
-import java.util.Random;
+import java.util.Comparator;
 import java.util.Scanner;
 
-//정수를 저정하는 이진트리 만들기 실습
-class TreeNodeInt {
-	TreeNodeInt LeftChild;
-	int data;
-	TreeNodeInt RightChild;
+class SimpleObject {
+	static final int NO = 1; // 번호를 읽어 들일까요?
+	static final int NAME = 2; // 이름을 읽어 들일까요?
 
+	private String no; // 회원번호
+	private String name; // 이름
 
-	public TreeNodeInt(int data) {
-		this.data = data;
+	// --- 문자열 표현을 반환 ---//
+	public String toString() {
+		return "(" + no + ") " + name;
+	}
+
+	public SimpleObject() {
+		no = null;
+		name = null;
+	}
+
+	public SimpleObject(String no, String name) {
+		this.no = no;
+		this.name = name;
+	}
+
+	// --- 데이터를 읽어 들임 ---//
+	void scanData(String guide, int sw) {
+		Scanner sc = new Scanner(System.in);
+		System.out.println(guide + "할 데이터를 입력하세요." + sw);
+
+		if ((sw & NO) == NO) { // & 는 bit 연산자임
+			System.out.print("번호: ");
+			no = sc.next();
+		}
+		if ((sw & NAME) == NAME) {
+			System.out.print("이름: ");
+			name = sc.next();
+		}
+	}
+
+	// --- 회원번호로 순서를 매기는 comparator ---//
+	public static final Comparator<SimpleObject> NO_ORDER = new NoOrderComparator();
+
+	private static class NoOrderComparator implements Comparator<SimpleObject> {
+		public int compare(SimpleObject d1, SimpleObject d2) {
+			return (d1.no.compareTo(d2.no) > 0) ? 1 : (d1.no.compareTo(d2.no) < 0) ? -1 : 0;
+		}
+	}
+
+	// --- 이름으로 순서를 매기는 comparator ---//
+	public static final Comparator<SimpleObject> NAME_ORDER = new NameOrderComparator();
+
+	private static class NameOrderComparator implements Comparator<SimpleObject> {
+		public int compare(SimpleObject d1, SimpleObject d2) {
+			return d1.name.compareTo(d2.name);
+		}
+	}
+}
+
+// 객체를 저정하는 이진트리 만들기 실습
+class TreeNodeObject {
+	TreeNodeObject LeftChild;
+	SimpleObject data;
+	TreeNodeObject RightChild;
+
+	public TreeNodeObject() {
 		LeftChild = RightChild = null;
 	}
 
+	public TreeNodeObject(SimpleObject so) {
+		data = so;
+		LeftChild = RightChild = null;
+	}
 }
 
-class TreeInt {
+class TreeObject {
 	private static int branchMode = 1;
 
 	private static final int CONSOLE_WIDTH = 100;
@@ -29,26 +87,22 @@ class TreeInt {
 	private static final int CELL_WIDTH = 8;
 
 	int maxNodeIndex = 15;
-	int[] nodeArray = new int[32];
+	SimpleObject[] nodeArray = new SimpleObject[32];
 
-	TreeNodeInt root;
+	TreeNodeObject root;
 
-	TreeInt() {
+	TreeObject() {
 		root = null;
-
-		for (int i = 0; i < nodeArray.length; i++) {
-			nodeArray[i] = 0;
-		}
 	}
 
 	void resetNodeArray() {
 		for (int i = 0; i < nodeArray.length; i++) {
-			nodeArray[i] = 0;
+			nodeArray[i] = null;
 		}
 		resetNodeArray(root, 1);
 	}
 
-	void resetNodeArray(TreeNodeInt n, int nodeIndex) {
+	void resetNodeArray(TreeNodeObject n, int nodeIndex) {
 		if (n == null)
 			return;
 
@@ -60,15 +114,32 @@ class TreeInt {
 
 	}
 
-	TreeNodeInt inorderSucc(TreeNodeInt current) {
-		TreeNodeInt temp = current.RightChild;
+	TreeNodeObject inorderSucc(TreeNodeObject current) {
+		TreeNodeObject temp = current.RightChild;
 		if (current.RightChild != null)
-			while (temp.LeftChild != null)
+			while (temp.LeftChild != null) {
 				temp = temp.LeftChild;
+			}
 		return temp;
 	}
 
-	boolean isLeafNode(TreeNodeInt current) {
+	TreeNodeObject findParent(TreeNodeObject current, Comparator<? super SimpleObject> c) {
+		TreeNodeObject p = root, temp = null;
+		while (p != null) {
+			if (c.compare(p.data, current.data) == 0) {
+				return temp;
+			} else if (c.compare(p.data, current.data) < 0) {
+				temp = p;
+				p = p.RightChild;
+			} else {
+				temp = p;
+				p = p.LeftChild;
+			}
+		}
+		return null;
+	}
+
+	boolean isLeafNode(TreeNodeObject current) {
 		if (current.LeftChild == null && current.RightChild == null)
 			return true;
 		else
@@ -87,15 +158,15 @@ class TreeInt {
 		postorder(root);
 	}
 
-	void inorder(TreeNodeInt CurrentNode) {
+	void inorder(TreeNodeObject CurrentNode) {
 		if (CurrentNode != null) {
 			inorder(CurrentNode.LeftChild);
-			System.out.print(" " + CurrentNode.data + " ");
+			System.out.print(" " + CurrentNode.data);
 			inorder(CurrentNode.RightChild);
 		}
 	}
 
-	void preorder(TreeNodeInt CurrentNode) {
+	void preorder(TreeNodeObject CurrentNode) {
 		if (CurrentNode != null) {
 			System.out.print(CurrentNode.data + " ");
 			preorder(CurrentNode.LeftChild);
@@ -103,7 +174,7 @@ class TreeInt {
 		}
 	}
 
-	void postorder(TreeNodeInt CurrentNode) {
+	void postorder(TreeNodeObject CurrentNode) {
 		if (CurrentNode != null) {
 			postorder(CurrentNode.LeftChild);
 			postorder(CurrentNode.RightChild);
@@ -111,26 +182,26 @@ class TreeInt {
 		}
 	}
 
-	boolean insert(int x) {// binary search tree를 만드는 입력 => A + B * C을 tree로 만드는 방법: 입력 해결하는 알고리즘 작성 방법을
-							// 설계하여 구현
+	public boolean insert(SimpleObject obj, Comparator<? super SimpleObject> c) {
+		// 설계하여 구현
 		int nodeIndex = 1;
-		TreeNodeInt p = root;
+		TreeNodeObject p = root;
 		if (p == null) {
-			root = new TreeNodeInt(x);
-			this.nodeArray[nodeIndex] = x;
+			root = new TreeNodeObject(obj);
+			this.nodeArray[nodeIndex] = obj;
 			return true;
 		}
 
-		TreeNodeInt q = null;
+		TreeNodeObject q = null;
 
 		while (p != null) {
 			// p를 바꾸기 전에 q 를 사용해야 한다.
 			q = p;
-			if (x < p.data) {
+			if (c.compare(obj, p.data) < 0) {
 				nodeIndex = nodeIndex * 2;
 				p = p.LeftChild;
 
-			} else if (p.data < x) {
+			} else if (c.compare(obj, p.data) > 0) {
 				nodeIndex = nodeIndex * 2 + 1;
 				p = p.RightChild;
 
@@ -142,12 +213,12 @@ class TreeInt {
 		}
 
 		// if branchMode == 1 이면 왼쪽에, 2 이면 오른쪽에 넣어라
-		if (x < q.data) {
-			q.LeftChild = new TreeNodeInt(x);
-			this.nodeArray[nodeIndex] = x;
-		} else if (q.data < x) {
-			q.RightChild = new TreeNodeInt(x);
-			this.nodeArray[nodeIndex] = x;
+		if (c.compare(obj, q.data) < 0) {
+			q.LeftChild = new TreeNodeObject(obj);
+			this.nodeArray[nodeIndex] = obj;
+		} else if (c.compare(obj, q.data) > 0) {
+			q.RightChild = new TreeNodeObject(obj);
+			this.nodeArray[nodeIndex] = obj;
 		} else {
 			// 같은 데이터가 있는 경우
 			return false;
@@ -157,22 +228,22 @@ class TreeInt {
 
 	}
 
-	boolean delete(int num) {
-		TreeNodeInt p = root;
+	public boolean delete(SimpleObject obj, Comparator<? super SimpleObject> c) {
+		TreeNodeObject p = root;
 		if (p == null) {
 
 			return false;
 		}
 
-		TreeNodeInt q = null;
+		TreeNodeObject q = null;
 
 		while (p != null) {
 
-			if (num < p.data) {
+			if (c.compare(obj, p.data) < 0) {
 				q = p;
 				p = p.LeftChild;
 
-			} else if (p.data < num) {
+			} else if (c.compare(obj, p.data) > 0) {
 				q = p;
 				p = p.RightChild;
 
@@ -192,9 +263,9 @@ class TreeInt {
 
 				} else if ((p.LeftChild != null) && (p.RightChild != null)) {
 					// 차일드가 2개인 경우
-					// TreeNodeInt insuc = inorderSucc(p);
-					TreeNodeInt insuc = p.RightChild;
-					TreeNodeInt insucParent = p;
+					// TreeNodeObject insuc = inorderSucc(p);
+					TreeNodeObject insuc = p.RightChild;
+					TreeNodeObject insucParent = p;
 					while (insuc.LeftChild != null) {
 						insucParent = insuc;
 						insuc = insuc.LeftChild;
@@ -206,7 +277,6 @@ class TreeInt {
 					if ((insuc == insucParent.RightChild) && (insuc.RightChild != null)) {
 						p.RightChild = insuc.RightChild;
 					} else {
-
 						if (insuc == insucParent.LeftChild) {
 							insucParent.LeftChild = null;
 						} else {
@@ -260,11 +330,11 @@ class TreeInt {
 		} // while (p != null)
 
 		return false;
+
 	}
 
-	boolean search(int num) {
-
-		TreeNodeInt p = root;
+	boolean search(SimpleObject obj, Comparator<? super SimpleObject> c) {
+		TreeNodeObject p = root;
 		if (p == null) {
 
 			return false;
@@ -272,10 +342,10 @@ class TreeInt {
 
 		while (p != null) {
 
-			if (num < p.data) {
+			if (c.compare(obj, p.data) < 0) {
 				p = p.LeftChild;
 
-			} else if (p.data < num) {
+			} else if (c.compare(obj, p.data) > 0) {
 				p = p.RightChild;
 
 			} else {
@@ -286,6 +356,7 @@ class TreeInt {
 		}
 
 		return false;
+
 	}
 
 	public void display() {
@@ -307,18 +378,18 @@ class TreeInt {
 			}
 
 			System.out.print(" ".repeat((rowStart) / 2));
-			if (((i * 2) <= maxNodeIndex) && (0 < nodeArray[i * 2]))
+			if (((i * 2) <= maxNodeIndex) && (null != nodeArray[i * 2]))
 				System.out.print(".".repeat((rowStart / 2) - 2));
 			else
 				System.out.print(" ".repeat((rowStart / 2) - 2));
 
-			if (0 < nodeArray[i]) {
+			if (null != nodeArray[i]) {
 				System.out.print(StringUtils.center(String.format("%s", nodeArray[i]), 4));
 			} else {
 				System.out.print(" ".repeat(4));
 			}
 
-			if (((i * 2 + 1) <= maxNodeIndex) && (0 < nodeArray[i * 2 + 1]))
+			if (((i * 2 + 1) <= maxNodeIndex) && (null != nodeArray[i * 2 + 1]))
 				System.out.print(".".repeat((rowStart / 2) - 2));
 			else
 				System.out.print(" ".repeat((rowStart / 2) - 2));
@@ -370,9 +441,10 @@ class StringUtils {
 	}
 }
 
-public class BinaryTreeInt {
+public class BinaryTreeObject {
+
 	enum Menu {
-		Add("삽입"), Delete("삭제"), Search("검색"), InorderPrint("순차출력"), Exit("종료");
+		Add("삽입"), Delete("삭제"), Search("검색"), InorderPrint("정렬인쇄"), Exit("종료");
 
 		private final String message; // 표시할 문자열
 
@@ -407,70 +479,45 @@ public class BinaryTreeInt {
 	}
 
 	public static void main(String[] args) {
-		Random rand = new Random(System.currentTimeMillis());
-		Scanner stdIn = new Scanner(System.in);
-		TreeInt t = new TreeInt();
+		Scanner sc2 = new Scanner(System.in);
+		TreeObject t = new TreeObject();
 		Menu menu; // 메뉴
+		String sno1, sname1;
+		SimpleObject so;
 		int count = 0;
 		int num;
 		boolean result;
 		do {
 			switch (menu = SelectMenu()) {
-				case Add: // 노드 삽입
-					System.out.println("The number of items = ");
-					count = stdIn.nextInt();
-					if (0 < count) {
-						int[] input = new int[10];
-						for (int ix = 0; ix < count; ix++) {
-							input[ix] = rand.nextInt(20) + 1;
-						}
-						for (int i = 0; i < count; i++) {
-							if (t.insert(input[i]) == false)
-								System.out.println("Insert Duplicated data");
-
-							t.display();
-						}
-					} else {
-						//
-						int[] arrData = { 20, 10, 30, 25, 40, 5 };
-						for (int i = 0; i < arrData.length; i++) {
-							boolean ret = t.insert(arrData[i]);
-							if (ret == false) {
-								System.out.println("Insert Duplicated data");
-							}
-							t.display();
-						}
+				case Add: // 머리노드 삽입
+					SimpleObject[] sox = { new SimpleObject("33", "ee"), new SimpleObject("55", "tt"),
+							new SimpleObject("22", "ww"), new SimpleObject("66", "yy"), new SimpleObject("21", "wq") };
+					for (SimpleObject soz : sox) {
+						t.insert(soz, SimpleObject.NO_ORDER);
+						t.display();
 					}
-
 					break;
-
-				case Delete: // 노드 삭제
-					System.out.println("삭제할 데이터:: ");
-					num = stdIn.nextInt();
-					if (t.delete(num) == true)
-						System.out.println("데이터(" + num + ") 삭제 성공");
-					else
-						System.out.println("데이터(" + num + ") 삭제 실패");
-					;
+				case Delete: // 머리 노드 삭제
+					so = new SimpleObject();
+					so.scanData("삭제", SimpleObject.NO);
+					t.delete(so, SimpleObject.NO_ORDER);
 					t.display();
 					break;
-
-				case Search: // 노드 검색
-					System.out.println("검색할 데이터:: ");
-
-					num = stdIn.nextInt();
-					result = t.search(num);
-					if (result == true)
-						System.out.println("해당 데이터(" + num + ")가 존재합니다.");
+				case Search: // 회원 번호 검색
+					so = new SimpleObject();
+					so.scanData("검색", SimpleObject.NO);
+					result = t.search(so, SimpleObject.NO_ORDER);
+					if (result == false)
+						System.out.println("검색 값 = " + so + "데이터가 없습니다.");
 					else
-						System.out.println("해당 데이터(" + num + ")가 없습니다.");
+						System.out.println("검색 값 = " + so + "데이터가 존재합니다.");
 					break;
 
 				case InorderPrint: // 전체 노드를 키값의 오름차순으로 표시
 					t.inorder();
 					System.out.println();
-
-					t.display();
+					break;
+				case Exit:
 					break;
 			}
 		} while (menu != Menu.Exit);
