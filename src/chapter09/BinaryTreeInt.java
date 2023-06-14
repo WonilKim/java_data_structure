@@ -46,6 +46,25 @@ class TreeInt {
 		}
 	}
 
+	void resetNodeArray() {
+			for (int i = 0; i < nodeArray.length; i++) {
+			nodeArray[i] = 0;
+		}
+		resetNodeArray(root);
+	}
+
+	void resetNodeArray(TreeNodeInt n) {
+		if (n == null)
+			return;
+
+		nodeArray[n.nodeIndex] = n.data;
+		if (n.LeftChild != null)
+			resetNodeArray(n.LeftChild);
+		if (n.RightChild != null)
+			resetNodeArray(n.RightChild);
+
+	}
+
 	TreeNodeInt inorderSucc(TreeNodeInt current) {
 		TreeNodeInt temp = current.RightChild;
 		if (current.RightChild != null)
@@ -178,9 +197,9 @@ class TreeInt {
 						insuc = insuc.LeftChild;
 					}
 
-					p.data = insuc.data;	// insuc 이 right child 이고 insuc 이 right child 를 가지고 있을때 문제 생김.
+					p.data = insuc.data; // insuc 이 right child 이고 insuc 이 right child 를 가지고 있을때 문제 생김.
 					// 지정한 트리 생성 후 루트만 2번 삭제시 문제 발생.
-					
+
 					nodeArray[p.nodeIndex] = nodeArray[insuc.nodeIndex];
 					nodeArray[insuc.nodeIndex] = 0;
 					if (insuc == insucParent.LeftChild) {
@@ -270,6 +289,8 @@ class TreeInt {
 	}
 
 	public void display() {
+		resetNodeArray();
+
 		System.out.println("-".repeat(CONSOLE_WIDTH));
 		for (int i = 1; i <= maxNodeIndex; i++) {
 			System.out.print(" " + nodeArray[i]);
@@ -401,7 +422,7 @@ public class BinaryTreeInt {
 					if (0 < count) {
 						int[] input = new int[10];
 						for (int ix = 0; ix < count; ix++) {
-							input[ix] = rand.nextInt(20);
+							input[ix] = rand.nextInt(20) + 1;
 						}
 						for (int i = 0; i < count; i++) {
 							if (t.insert(input[i]) == false)
